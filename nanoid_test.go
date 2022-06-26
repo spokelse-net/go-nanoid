@@ -13,7 +13,7 @@ import (
 func init() {
 	// This is so that math/rand can work correctly.
 	// Only needed for non-secure. Users will have to do this themselves.
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().Unix())
 }
 
 func TestNew(t *testing.T) {
@@ -108,8 +108,6 @@ func BenchmarkNanoID(b *testing.B) {
 	}
 }
 
-// Non-secure is not as fast as it could be.
-// TODO: make it faster.
 func BenchmarkNonSecureNanoID(b *testing.B) {
 	f, err := nanoid.NewNonSecure(21)
 	if err != nil {

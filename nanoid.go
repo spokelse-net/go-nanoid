@@ -17,7 +17,7 @@ import (
 )
 
 // Default characters (A-Za-z0-9_-).
-var defaultCharset = []rune("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
+var defaultCharset = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
 
 type generator = func() string
 
@@ -29,19 +29,25 @@ func New(length int) (generator, error) {
 		return nil, errInvalidLength
 	}
 
-	var mu sync.Mutex
-
 	// Multiplying by 128 and using an offset so
 	// that the bytes only have to be refilled
 	// every 129th nanoid. This is more efficient.
 
+	// b holds the random crypto bytes.
 	b := make([]byte, length*128)
 	size := len(b)
 	offset := 0
 
 	cryptoRand.Read(b)
 
-	id := make([]rune, length)
+	// Since the default charset is ASCII,
+	// we don't have to use runes here. ASCII max is
+	// 128, so byte will be perfect.
+
+	id := make([]byte, length)
+	// id := make([]rune, length)
+
+	var mu sync.Mutex
 
 	return func() string {
 		mu.Lock()
@@ -50,7 +56,6 @@ func New(length int) (generator, error) {
 		// If all the bytes in the slice
 		// have been used, refill.
 		if offset == size {
-
 			cryptoRand.Read(b)
 			offset = 0
 		}
@@ -67,8 +72,6 @@ func New(length int) (generator, error) {
 	}, nil
 }
 
-// TODO: make NewNonSecure faster
-
 // Create a non-secure Nano ID generator.
 // Non-secure is faster than secure because it uses pseudorandom numbers.
 // Returns error if length is not between 2 and 255 (inclusive).
@@ -79,18 +82,33 @@ func NewNonSecure(length int) (generator, error) {
 		return nil, errInvalidLength
 	}
 
-	var mu sync.Mutex
+	// b holds pseudorandom bytes.
+	b := make([]byte, length*128)
+	size := len(b)
+	offset := 0
+
+	mathRand.Read(b)
 
 	// Reuse.
-	id := make([]rune, length)
+	id := make([]byte, length)
+
+	var mu sync.Mutex
 
 	return func() string {
 		mu.Lock()
 		defer mu.Unlock()
 
-		for i := 0; i < length; i++ {
-			id[i] = defaultCharset[mathRand.Intn(64)]
+		if offset == size {
+			// Refill b.
+			mathRand.Read(b)
+			offset = 0
 		}
+
+		for i := 0; i < length; i++ {
+			id[i] = defaultCharset[b[i+offset]&63]
+		}
+
+		offset += length
 
 		return string(id)
 	}, nil
@@ -103,14 +121,12 @@ func NewCustom(charset string, length int) (generator, error) {
 		return nil, errInvalidLength
 	}
 
-	var mu sync.Mutex
-
 	setLen := len(charset)
 	runicSet := []rune(charset)
 
 	// Because the custom character-set is not guaranteed to have
 	// 64 chars to utilise, we have to calculate a suitable mask.
-	// This is 1:1 to the original implementation.
+	// The following calculations are 1:1 to the original implementation.
 	clz := bits.LeadingZeros32((uint32(setLen) - 1) | 1)
 	mask := (2 << (31 - clz)) - 1
 	w := (1.6 * float64(mask*length)) / float64(setLen)
@@ -119,6 +135,8 @@ func NewCustom(charset string, length int) (generator, error) {
 	// Will be reusing the same rune and byte slices.
 	id := make([]rune, length)
 	b := make([]byte, step)
+
+	var mu sync.Mutex
 
 	return func() string {
 		mu.Lock()
@@ -153,20 +171,16 @@ func NewCustomNonSecure(charset string, length int) (generator, error) {
 		return nil, errInvalidLength
 	}
 
-	var mu sync.Mutex
-
 	runicSet := []rune(charset)
 	setLen := len(runicSet)
 
-	// var id strings.Builder
-	// id.Grow(length)
 	id := make([]rune, length)
+
+	var mu sync.Mutex
 
 	return func() string {
 		mu.Lock()
 		defer mu.Unlock()
-
-		// id.Reset()
 
 		for i := 0; i < length; i++ {
 			id[i] = runicSet[mathRand.Intn(setLen)]
