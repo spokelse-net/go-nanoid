@@ -1,4 +1,7 @@
 # go-nanoid
+[![Build Status](https://github.com/jaevor/go-nanoid/workflows/test/badge.svg)](https://github.com/jaevor/go-nanoid/actions) 
+[![Build Status](https://github.com/jaevor/go-nanoid/workflows/lint/badge.svg)](https://github.com/jaevor/go-nanoid/actions)
+[![GitHub Issues](https://img.shields.io/github/issues/jaevor/go-nanoid.svg)](https://github.com/jaevor/go-nanoid/issues)
 
 This module is a Go implementation of [nanoid](https://github.com/ai/nanoid).
 
