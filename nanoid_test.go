@@ -77,7 +77,7 @@ func TestFlatDistribution(t *testing.T) {
 	}
 
 	for _, count := range hits {
-		require.InEpsilon(t, length*tries/len(set), count, 0.02 /* 0.01 */, "should have flat-distribution")
+		require.InEpsilon(t, length*tries/len(set), count, 0.03 /* 0.01 */, "should have flat-distribution")
 	}
 }
 
