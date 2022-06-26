@@ -38,6 +38,7 @@ func New(length int) (generator, error) {
 	b := make([]byte, length*128)
 	size := len(b)
 	offset := 0
+
 	cryptoRand.Read(b)
 
 	id := make([]rune, length)
@@ -49,6 +50,7 @@ func New(length int) (generator, error) {
 		// If all the bytes in the slice
 		// have been used, refill.
 		if offset == size {
+
 			cryptoRand.Read(b)
 			offset = 0
 		}
