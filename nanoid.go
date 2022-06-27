@@ -24,7 +24,7 @@ type generator = func() string
 // Creates a new generator for Nano IDs. Recommended length is 21.
 // Returns error if length is not between 2 and 255 (inclusive).
 // Concurrency safe.
-func New(length int) (generator, error) {
+func Standard(length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -44,10 +44,10 @@ func New(length int) (generator, error) {
 	// we don't have to use runes here. ASCII max is
 	// 128, so byte will be perfect.
 
-	id := make([]byte, length)
 	// id := make([]rune, length)
 
 	var mu sync.Mutex
+	id := make([]byte, length)
 
 	return func() string {
 		mu.Lock()
@@ -75,9 +75,9 @@ func New(length int) (generator, error) {
 // Create a non-secure Nano ID generator.
 // Non-secure is faster than secure because it uses pseudorandom numbers.
 // Returns error if length is not between 2 and 255 (inclusive).
-// Remember to seed using math.Seed().
+// Remember to seed using rand.Seed().
 // Concurrency safe.
-func NewNonSecure(length int) (generator, error) {
+func StandardNonSecure(length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -105,6 +105,13 @@ func NewNonSecure(length int) (generator, error) {
 		}
 
 		for i := 0; i < length; i++ {
+			/*
+				"It is incorrect to use bytes exceeding the alphabet size.
+				The following mask reduces the random byte in the 0-255 value
+				range to the 0-63 value range. Therefore, adding hacks such
+				as empty string fallback or magic numbers is unneccessary because
+				the bitmask trims bytes down to the alphabet [charset] size (64).""
+			*/
 			id[i] = defaultCharset[b[i+offset]&63]
 		}
 
@@ -116,7 +123,7 @@ func NewNonSecure(length int) (generator, error) {
 
 // Create a Nano ID generator that uses a custom character set.
 // Concurrency safe.
-func NewCustom(charset string, length int) (generator, error) {
+func Custom(charset string, length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -164,9 +171,9 @@ func NewCustom(charset string, length int) (generator, error) {
 // Create a non-secure Nano ID generator that uses a custom character set.
 // Non-secure is faster than secure because it uses pseudorandom numbers.
 // Returns error if length is not between 2 and 255 (inclusive).
-// Remember to seed using math.Seed().
+// Remember to seed using rand.Seed().
 // Concurrency safe.
-func NewCustomNonSecure(charset string, length int) (generator, error) {
+func CustomNonSecure(charset string, length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}

@@ -18,7 +18,7 @@ func init() {
 
 func TestNew(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
-		f, err := nanoid.New(21)
+		f, err := nanoid.Standard(21)
 		assert.NoError(t, err, "should be no error")
 		id := f()
 		assert.Len(t, id, 21, "should return the same length as the ID specified length")
@@ -26,15 +26,24 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("negative ID length", func(t *testing.T) {
-		_, err := nanoid.New(-1)
+		_, err := nanoid.Standard(-1)
 		assert.Error(t, err, "should error if passed ID length is negative")
 	})
 
+	t.Run("invalid length (256)", func(t *testing.T) {
+		_, err := nanoid.Standard(256)
+		assert.Error(t, err, "should error if length > 255")
+	})
+
+	t.Run("invalid length (1)", func(t *testing.T) {
+		_, err := nanoid.Standard(1)
+		assert.Error(t, err, "should error if length < 2")
+	})
 }
 
 func TestNewNonSecure(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
-		f, err := nanoid.NewNonSecure(21)
+		f, err := nanoid.StandardNonSecure(21)
 		assert.NoError(t, err, "should be no error")
 		id := f()
 		assert.Len(t, id, 21, "should return the same length as the ID specified length")
@@ -44,7 +53,7 @@ func TestNewNonSecure(t *testing.T) {
 
 func TestNewCustom(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
-		f, err := nanoid.NewCustom("abcdef", 21)
+		f, err := nanoid.Custom("abcdef", 21)
 		id := f()
 		assert.NoError(t, err, "should be no error")
 		assert.Len(t, id, 21, "should return the same length as the ID specified length")
@@ -61,7 +70,7 @@ func TestFlatDistribution(t *testing.T) {
 	length := len(set)
 	hits := make(map[rune]int)
 
-	f, err := nanoid.NewCustom(set, length)
+	f, err := nanoid.Custom(set, length)
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +94,7 @@ func TestCollisions(t *testing.T) {
 	tries := 50_000
 
 	used := make(map[string]bool)
-	f, err := nanoid.New(21)
+	f, err := nanoid.Standard(21)
 	if err != nil {
 		panic(err)
 	}
@@ -97,8 +106,41 @@ func TestCollisions(t *testing.T) {
 	}
 }
 
-func BenchmarkNanoID(b *testing.B) {
-	f, err := nanoid.New(21)
+func Benchmark21NanoID(b *testing.B) {
+	f, err := nanoid.Standard(21)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}
+
+func Benchmark8NanoID(b *testing.B) {
+	f, err := nanoid.Standard(8)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}
+
+func Benchmark36NanoID(b *testing.B) {
+	f, err := nanoid.Standard(36)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}
+
+func Benchmark255NanoID(b *testing.B) {
+	f, err := nanoid.Standard(255)
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +151,7 @@ func BenchmarkNanoID(b *testing.B) {
 }
 
 func BenchmarkNonSecureNanoID(b *testing.B) {
-	f, err := nanoid.NewNonSecure(21)
+	f, err := nanoid.StandardNonSecure(21)
 	if err != nil {
 		panic(err)
 	}

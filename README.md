@@ -17,16 +17,21 @@ Features of the nanoid spec are:
 > URL friendly
 
 Features of this specific implementation are:
-> Fastest, most performant implementation of Nano ID
+> Fastest and most performant implementation of Nano ID ([benchmarks](#benchmarks))
+
+> Prefetches random bytes in advance
+
+> Uses optimal memory
 
 > No production dependencies
 
-*See [comparison with UUID](https://github.com/ai/nanoid/blob/main/README.md#comparison-with-uuid)*
+*See [comparison of Nano ID and UUID (V4)](https://github.com/ai/nanoid/blob/main/README.md#comparison-with-uuid)*
 
 **[NanoID collison calculator](https://zelark.github.io/nano-id-cc/)**
 
 **Read more [here](https://github.com/ai/nanoid/blob/main/README.md)**
 
+---
 
 ## Example
 
@@ -39,49 +44,78 @@ import (
 )
 
 func main() {
-  createNanoid, err := nanoid.New(21)
+  createNanoid, err := nanoid.Standard(21)
   if err != nil {
     panic(err)
   }
 
   id1 := createNanoid()
-  id2 := createNanoid()
-
   log.Printf("ID 1: %s", id1) // p7aXQf7xK3jlfecYGKeRK
-  log.Printf("ID 2: %s", id2) // WTGJ1VPh472R_4h--UNL0
 
   // [!] Remember to seed. 
   rand.Seed(time.Now().Unix())
 
-  createNonSecureNanoid, err := nanoid.NewNonSecure(21)
+  createNonSecureNanoid, err := nanoid.StandardNonSecure(21)
   if err != nil {
     panic(err)
   }
 
-  id3 := createNonSecureNanoid()
-  id4 := createNonSecureNanoid()
+  id2 := createNonSecureNanoid()
+  log.Printf("ID 2: %s", id2) // japKZqwnQvllgUQ8lwgkP
 
-  log.Printf("ID 3: %s", id3) // japKZqwnQvllgUQ8lwgkP
-  log.Printf("ID 4: %s", id4) // 2jo3VdWZ2LbTB79TKB9je
+  createCustomNanoid, err := nanoid.Custom("0123456789", 12)
+  if err != nil {
+    panic(err)
+  }
+
+  id3 := f3()
+  log.Printf("ID 3: %s", id3) // 462855288020
 }
 
 ```
+---
+
+## Notes
+Developed in Go 1.18.3
+
+Remember to `rand.Seed(...)` before using the non-secure generators.
+
+**The generation of non-secure Nano IDs are not as fast as they could be yet**
 
 ---
 
 ## Benchmarks
 All benchmarks & tests can be found in [nanoid_test.go](./nanoid_test.go).
 
-**14,500,000** Nano IDs in **1300ms** @ `82.5 ns/op`**,** `24 B/op`**,** `1 alloc/op`.
-![benchmark](./img/benchmark.png)
+These are all benchmarks of the `Standard` Nano ID generator
+
+**~19,120,000** <span class="yellow">8</span> character Nano IDs in **1.121s** @ `53.7 ns/op`**,** `8 B/op`**,** `1 alloc/op`.
+![benchmark-8](./img/benchmark-8.png)
+
+**~14,500,000** <span class="yellow">21</span> character Nano IDs in **1.317s** @ `82.5 ns/op`**,** `24 B/op`**,** `1 alloc/op`.
+![benchmark-21](./img/benchmark-21.png)
+
+**~11,000,000** <span class="yellow">36</span> character Nano IDs in **1.411s** @ `115.1 ns/op`**,** `48 B/op`**,** `1 alloc/op`.
+![benchmark-36](./img/benchmark-36.png)
+
+**~2,300,000** <span class="yellow">255</span> character Nano IDs in **1.722s** @ `496.4 ns/op`**,** `256 B/op`**,** `1 alloc/op`.
+
+![benchmark-255](./img/benchmark-255.png)
 
 ---
 
 ## Credits & references
 - [Original reference](https://github.com/ai/nanoid)
-- [Outdated Go implementation (26/06/22)](https://github.com/matoous/go-nanoid)
+- [Outdated (by 2+ years) Go implementation](https://github.com/matoous/go-nanoid)
 
 ---
 
 ## License
-[MIT LICENSE](./LICENSE)
+[MIT License](./LICENSE)
+
+
+<style>
+  .yellow {
+    color: yellow;
+  }
+</style>
