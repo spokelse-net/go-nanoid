@@ -89,18 +89,12 @@ All benchmarks & tests can be found in [nanoid_test.go](./nanoid_test.go).
 
 These are all benchmarks of the `Standard` Nano ID generator
 
-**~19,120,000** <span class="yellow">8</span> character Nano IDs in **1.121s** @ `53.7 ns/op`**,** `8 B/op`**,** `1 alloc/op`.
-![benchmark-8](./img/benchmark-8.png)
-
-**~14,500,000** <span class="yellow">21</span> character Nano IDs in **1.317s** @ `82.5 ns/op`**,** `24 B/op`**,** `1 alloc/op`.
-![benchmark-21](./img/benchmark-21.png)
-
-**~11,000,000** <span class="yellow">36</span> character Nano IDs in **1.411s** @ `115.1 ns/op`**,** `48 B/op`**,** `1 alloc/op`.
-![benchmark-36](./img/benchmark-36.png)
-
-**~2,300,000** <span class="yellow">255</span> character Nano IDs in **1.722s** @ `496.4 ns/op`**,** `256 B/op`**,** `1 alloc/op`.
-
-![benchmark-255](./img/benchmark-255.png)
+| # of characters & # of IDs | benchmark screenshot |
+| -------------------------- | ---------- |
+| 8, ~19,120,000             | <img src="img/benchmark-8.png">   |
+| 21, ~14,500,000            | <img src="img/benchmark-21.png">  |
+| 36, ~11,000,000            | <img src="img/benchmark-36.png">  |
+| 255, ~2,300,000            | <img src="img/benchmark-255.png"> |
 
 ---
 
@@ -112,10 +106,3 @@ These are all benchmarks of the `Standard` Nano ID generator
 
 ## License
 [MIT License](./LICENSE)
-
-
-<style>
-  .yellow {
-    color: yellow;
-  }
-</style>
