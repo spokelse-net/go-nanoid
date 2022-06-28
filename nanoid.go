@@ -17,11 +17,11 @@ import (
 )
 
 // Default characters (A-Za-z0-9_-).
-var defaultCharset = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
+var defaultAlphabet = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
 
 type generator = func() string
 
-// Creates a new generator for Nano IDs. Recommended length is 21.
+// Creates a new generator for Nano IDs. *Recommended (standard) length is 21*.
 // Returns error if length is not between 2 and 255 (inclusive).
 // Concurrency safe.
 func Standard(length int) (generator, error) {
@@ -40,14 +40,13 @@ func Standard(length int) (generator, error) {
 
 	cryptoRand.Read(b)
 
-	// Since the default charset is ASCII,
+	// Since the default alphabet is ASCII,
 	// we don't have to use runes here. ASCII max is
 	// 128, so byte will be perfect.
-
 	// id := make([]rune, length)
+	id := make([]byte, length)
 
 	var mu sync.Mutex
-	id := make([]byte, length)
 
 	return func() string {
 		mu.Lock()
@@ -62,7 +61,7 @@ func Standard(length int) (generator, error) {
 
 		for i := 0; i < length; i++ {
 			// Index using the offset.
-			id[i] = defaultCharset[b[i+offset]&63]
+			id[i] = defaultAlphabet[b[i+offset]&63]
 		}
 
 		// Extend the offset.
@@ -110,9 +109,9 @@ func StandardNonSecure(length int) (generator, error) {
 				The following mask reduces the random byte in the 0-255 value
 				range to the 0-63 value range. Therefore, adding hacks such
 				as empty string fallback or magic numbers is unneccessary because
-				the bitmask trims bytes down to the alphabet [charset] size (64).""
+				the bitmask trims bytes down to the alphabet size (64).""
 			*/
-			id[i] = defaultCharset[b[i+offset]&63]
+			id[i] = defaultAlphabet[b[i+offset]&63]
 		}
 
 		offset += length
@@ -123,13 +122,13 @@ func StandardNonSecure(length int) (generator, error) {
 
 // Create a Nano ID generator that uses a custom character set.
 // Concurrency safe.
-func Custom(charset string, length int) (generator, error) {
+func Custom(alphabet string, length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
 
-	setLen := len(charset)
-	runicSet := []rune(charset)
+	setLen := len(alphabet)
+	runicSet := []rune(alphabet)
 
 	// Because the custom character-set is not guaranteed to have
 	// 64 chars to utilise, we have to calculate a suitable mask.
@@ -173,12 +172,12 @@ func Custom(charset string, length int) (generator, error) {
 // Returns error if length is not between 2 and 255 (inclusive).
 // Remember to seed using rand.Seed().
 // Concurrency safe.
-func CustomNonSecure(charset string, length int) (generator, error) {
+func CustomNonSecure(alphabet string, length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
 
-	runicSet := []rune(charset)
+	runicSet := []rune(alphabet)
 	setLen := len(runicSet)
 
 	id := make([]rune, length)

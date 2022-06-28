@@ -61,10 +61,8 @@ func TestNewCustom(t *testing.T) {
 	})
 }
 
-// Not always perfect?*
-// Usually it is within 0.01, like 0.0157... or like 0.0112, the lowest I've gotten.
 func TestFlatDistribution(t *testing.T) {
-	tries := 10_000
+	tries := 500_000
 
 	set := "0123456789" // 10.
 	length := len(set)
@@ -77,21 +75,18 @@ func TestFlatDistribution(t *testing.T) {
 
 	for i := 0; i < tries; i++ {
 		id := f()
-		if err != nil {
-			panic(err)
-		}
 		for _, r := range id {
 			hits[r]++
 		}
 	}
 
 	for _, count := range hits {
-		require.InEpsilon(t, length*tries/len(set), count, 0.03 /* 0.01 */, "should have flat-distribution")
+		require.InEpsilon(t, length*tries/len(set), count, 0.01, "should have flat-distribution")
 	}
 }
 
 func TestCollisions(t *testing.T) {
-	tries := 50_000
+	tries := 500_000
 
 	used := make(map[string]bool)
 	f, err := nanoid.Standard(21)

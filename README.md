@@ -8,26 +8,22 @@
 This module is a Go implementation of [nanoid](https://github.com/ai/nanoid).
 
 Features of the nanoid spec are:
-> Use of hardware random generator
-
-> Uses a larger charset (`A-Za-z0-9_-`) than UUID
-
-> Faster than UUID
-
-> URL friendly
+- URL friendly
+- Use of hardware random generator
+- Uses a bigger alphabet than UUID, so a similar number of random bits are packed in just 21 symbols instead of 36 (like UUID)
+- 2x faster than UUID (V4)
 
 Features of this specific implementation are:
-> Fastest and most performant implementation of Nano ID ([benchmarks](#benchmarks))
+- Fastest and most performant implementation of Nano ID ([benchmarks](#benchmarks))
+- Prefetches random bytes in advance
+- Uses optimal memory
+- No production dependencies
 
-> Prefetches random bytes in advance
+***See [comparison of Nano ID and UUID (V4)](https://github.com/ai/nanoid/blob/main/README.md#comparison-with-uuid)***:
+>"Nano ID is quite comparable to UUID v4 (random-based). It has a similar number of random bits in the ID (126 in Nano ID and 122 in UUID), so it has a similar collision probability -- **for there to be a one in a billion chance of duplication, 103 trillion version 4 IDs must be generated**"
 
-> Uses optimal memory
-
-> No production dependencies
-
-*See [comparison of Nano ID and UUID (V4)](https://github.com/ai/nanoid/blob/main/README.md#comparison-with-uuid)*
-
-**[NanoID collison calculator](https://zelark.github.io/nano-id-cc/)**
+**And [NanoID collison calculator](https://zelark.github.io/nano-id-cc/)**:
+> If 1,000,000 Nano IDs (using `nanoid.Standard(21)`) were generated **each second**, it would require ~41 thousand years in order to have a 1% probability of a collision 
 
 **Read more [here](https://github.com/ai/nanoid/blob/main/README.md)**
 
@@ -68,7 +64,7 @@ func main() {
     panic(err)
   }
 
-  id3 := f3()
+  id3 := createCustomNanoid()
   log.Printf("ID 3: %s", id3) // 462855288020
 }
 
@@ -76,11 +72,13 @@ func main() {
 ---
 
 ## Notes
+**[!] The generation of non-secure Nano IDs are not as fast as they could be yet**
+
 Developed in Go 1.18.3
 
-Remember to `rand.Seed(...)` before using the non-secure generators.
+Remember to `rand.Seed(...)` before using the non-secure generators
 
-**The generation of non-secure Nano IDs are not as fast as they could be yet**
+In terms of speed & efficiency, it is probably *always* better to use `Standard` Nano ID than any `Custom`
 
 ---
 
