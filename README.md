@@ -3,6 +3,7 @@
 [![Build Status](https://github.com/jaevor/go-nanoid/workflows/tests/badge.svg)](https://github.com/jaevor/go-nanoid/actions)
 [![Build Status](https://github.com/jaevor/go-nanoid/workflows/lint/badge.svg)](https://github.com/jaevor/go-nanoid/actions)
 [![GitHub Issues](https://img.shields.io/github/issues/jaevor/go-nanoid.svg)](https://github.com/jaevor/go-nanoid/issues)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/jaevor/go-nanoid?label=Go)](https://github.com/jaevor/go-nanoid/blob/master/go.mod)
 [![Go Ref](https://pkg.go.dev/badge/github.com/jaevor/go-nanoid)](https://pkg.go.dev/github.com/jaevor/go-nanoid)
 
 This module is a Go implementation of [nanoid](https://github.com/ai/nanoid).
@@ -26,8 +27,6 @@ Features of this specific implementation are:
 > If 1,000,000 Nano IDs (using `nanoid.Standard(21)`) were generated **each second**, it would require ~41 thousand years in order to have a 1% probability of a collision 
 
 **Read more [here](https://github.com/ai/nanoid/blob/main/README.md)**
-
----
 
 ## Example
 
@@ -69,18 +68,12 @@ func main() {
 }
 
 ```
----
-
 ## Notes
 **[!] The generation of non-secure Nano IDs are not as fast as they could be yet**
-
-Developed in Go 1.18.3
 
 Remember to `rand.Seed(...)` before using the non-secure generators
 
 In terms of speed & efficiency, it is probably *always* better to use `Standard` Nano ID than any `Custom`
-
----
 
 ## Benchmarks
 All benchmarks & tests can be found in [nanoid_test.go](./nanoid_test.go).
@@ -94,13 +87,9 @@ These are all benchmarks of the `Standard` Nano ID generator
 | 36, ~11,000,000            | <img src="img/benchmark-36.png">  |
 | 255, ~2,300,000            | <img src="img/benchmark-255.png"> |
 
----
-
 ## Credits & references
 - [Original reference](https://github.com/ai/nanoid)
 - [Outdated (by 2+ years) Go implementation](https://github.com/matoous/go-nanoid)
-
----
 
 ## License
 [MIT License](./LICENSE)
