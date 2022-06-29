@@ -113,6 +113,17 @@ func Benchmark8NanoID(b *testing.B) {
 	}
 }
 
+func Benchmark16NanoID(b *testing.B) {
+	f, err := nanoid.Standard(16)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}
+
 func Benchmark21NanoID(b *testing.B) {
 	f, err := nanoid.Standard(21)
 	if err != nil {

@@ -84,6 +84,13 @@ func Standard(length int) (generator, error) {
 		}
 
 		for i := 0; i < length; i++ {
+			/*
+				"It is incorrect to use bytes exceeding the alphabet size.
+				The following mask reduces the random byte in the 0-255 value
+				range to the 0-63 value range. Therefore, adding hacks such
+				as empty string fallback or magic numbers is unneccessary because
+				the bitmask trims bytes down to the alphabet size (64).""
+			*/
 			// Index using the offset.
 			id[i] = defaultAlphabet[b[i+offset]&63]
 		}
@@ -137,13 +144,6 @@ func StandardNonSecure(length int) (generator, error) {
 		}
 
 		for i := 0; i < length; i++ {
-			// 	/*
-			// 		"It is incorrect to use bytes exceeding the alphabet size.
-			// 		The following mask reduces the random byte in the 0-255 value
-			// 		range to the 0-63 value range. Therefore, adding hacks such
-			// 		as empty string fallback or magic numbers is unneccessary because
-			// 		the bitmask trims bytes down to the alphabet size (64).""
-			// 	*/
 			id[i] = defaultAlphabet[b[i+offset]&63]
 		}
 
@@ -164,6 +164,8 @@ func Custom(alphabet string, length int) (generator, error) {
 	}
 
 	setLen := len(alphabet)
+	// Have to use runes because input is
+	// not guaranteed to be ASCII.
 	runicSet := []rune(alphabet)
 
 	// Because the custom character-set is not guaranteed to have
