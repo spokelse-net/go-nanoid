@@ -11,8 +11,8 @@ This module is a Go implementation of [nanoid](https://github.com/ai/nanoid).
 Features of the nanoid spec are:
 - URL friendly
 - Use of hardware random generator
-- Uses a bigger alphabet than UUID, so a similar number of random bits are packed in just 21 symbols instead of 36 (like UUID)
-- 2x faster than UUID (V4)
+- Uses a bigger alphabet than UUID, so a similar number of random bits are packed in just 21 chars instead of 36 (like UUID)
+- Much, much faster than UUID (V4)
 
 Features of this specific implementation are:
 - Fastest and most performant implementation of Nano ID ([benchmarks](#benchmarks))
@@ -23,7 +23,7 @@ Features of this specific implementation are:
 ***See [comparison of Nano ID and UUID (V4)](https://github.com/ai/nanoid/blob/main/README.md#comparison-with-uuid)***:
 >"Nano ID is quite comparable to UUID v4 (random-based). It has a similar number of random bits in the ID (126 in Nano ID and 122 in UUID), so it has a similar collision probability -- **for there to be a one in a billion chance of duplication, 103 trillion version 4 IDs must be generated**"
 
-**And [NanoID collison calculator](https://zelark.github.io/nano-id-cc/)**:
+**And [NanoID collision calculator](https://zelark.github.io/nano-id-cc/)**:
 > If 1,000,000 Nano IDs (using `nanoid.Standard(21)`) were generated **each second**, it would require ~41 thousand years in order to have a 1% probability of a collision 
 
 **Read more [here](https://github.com/ai/nanoid/blob/main/README.md)**
@@ -82,9 +82,9 @@ These are all benchmarks of the `Standard` Nano ID generator
 
 | # of characters & # of IDs | benchmark screenshot |
 | -------------------------- | ---------- |
-| 8, ~19,120,000             | <img src="img/benchmark-8.png">   |
-| 21, ~14,500,000            | <img src="img/benchmark-21.png">  |
-| 36, ~11,000,000            | <img src="img/benchmark-36.png">  |
+| 8, ~21,800,000             | <img src="img/benchmark-8.png">   |
+| 21, ~15,100,000            | <img src="img/benchmark-21.png">  |
+| 36, ~11,500,000            | <img src="img/benchmark-36.png">  |
 | 255, ~2,300,000            | <img src="img/benchmark-255.png"> |
 
 ## Credits & references

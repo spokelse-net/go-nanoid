@@ -17,12 +17,31 @@ import (
 )
 
 // Default characters (A-Za-z0-9_-).
-var defaultAlphabet = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
+// Using less memory with [64]byte{...} than []byte(...).
+// var defaultAlphabet = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
+var defaultAlphabet = [...]byte{
+	'a', 'b', 'c', 'd',
+	'e', 'f', 'g', 'h',
+	'i', 'j', 'k', 'l',
+	'm', 'n', 'o', 'p',
+	'q', 'r', 's', 't',
+	'u', 'v', 'w', 'x',
+	'y', 'z', 'A', 'B',
+	'C', 'D', 'E', 'F',
+	'G', 'H', 'I', 'J',
+	'K', 'L', 'M', 'N',
+	'O', 'P', 'Q', 'R',
+	'S', 'T', 'U', 'V',
+	'W', 'X', 'Y', 'Z',
+	'0', '1', '2', '3',
+	'4', '5', '6', '7',
+	'8', '9', '-', '_',
+}
 
 type generator = func() string
 
 /*
-Creates a new generator for Nano IDs.
+Creates a new generator for canonical Nano IDs.
 
 📝 Recommended (standard) length is 21
 
@@ -96,6 +115,10 @@ func StandardNonSecure(length int) (generator, error) {
 	size := len(b)
 	offset := 0
 
+	/*
+		"Read generates len(p) random bytes from the default Source and
+		writes them into p... It always returns len(p) and a **nil error**."
+	*/
 	mathRand.Read(b)
 
 	// Reuse.
@@ -114,13 +137,13 @@ func StandardNonSecure(length int) (generator, error) {
 		}
 
 		for i := 0; i < length; i++ {
-			/*
-				"It is incorrect to use bytes exceeding the alphabet size.
-				The following mask reduces the random byte in the 0-255 value
-				range to the 0-63 value range. Therefore, adding hacks such
-				as empty string fallback or magic numbers is unneccessary because
-				the bitmask trims bytes down to the alphabet size (64).""
-			*/
+			// 	/*
+			// 		"It is incorrect to use bytes exceeding the alphabet size.
+			// 		The following mask reduces the random byte in the 0-255 value
+			// 		range to the 0-63 value range. Therefore, adding hacks such
+			// 		as empty string fallback or magic numbers is unneccessary because
+			// 		the bitmask trims bytes down to the alphabet size (64).""
+			// 	*/
 			id[i] = defaultAlphabet[b[i+offset]&63]
 		}
 
@@ -214,7 +237,7 @@ func CustomNonSecure(alphabet string, length int) (generator, error) {
 	}, nil
 }
 
-var errInvalidLength = errors.New("length must be between 2 and 255 (inclusive)")
+var errInvalidLength = errors.New("length for ID is too large or small")
 
 func invalidLength(length int) bool {
 	return length < 2 || length > 255

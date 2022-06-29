@@ -1,3 +1,4 @@
+// Tests & benchmarks
 package nanoid_test
 
 import (
@@ -16,7 +17,7 @@ func init() {
 	rand.Seed(time.Now().Unix())
 }
 
-func TestNew(t *testing.T) {
+func TestStandard(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
 		f, err := nanoid.Standard(21)
 		assert.NoError(t, err, "should be no error")
@@ -41,7 +42,7 @@ func TestNew(t *testing.T) {
 	})
 }
 
-func TestNewNonSecure(t *testing.T) {
+func TestNonSecure(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
 		f, err := nanoid.StandardNonSecure(21)
 		assert.NoError(t, err, "should be no error")
@@ -51,7 +52,7 @@ func TestNewNonSecure(t *testing.T) {
 	})
 }
 
-func TestNewCustom(t *testing.T) {
+func TestCustom(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
 		f, err := nanoid.Custom("abcdef", 21)
 		id := f()
@@ -89,7 +90,7 @@ func TestCollisions(t *testing.T) {
 	tries := 500_000
 
 	used := make(map[string]bool)
-	f, err := nanoid.Standard(21)
+	f, err := nanoid.Standard(8)
 	if err != nil {
 		panic(err)
 	}
@@ -101,8 +102,8 @@ func TestCollisions(t *testing.T) {
 	}
 }
 
-func Benchmark21NanoID(b *testing.B) {
-	f, err := nanoid.Standard(21)
+func Benchmark8NanoID(b *testing.B) {
+	f, err := nanoid.Standard(8)
 	if err != nil {
 		panic(err)
 	}
@@ -112,8 +113,8 @@ func Benchmark21NanoID(b *testing.B) {
 	}
 }
 
-func Benchmark8NanoID(b *testing.B) {
-	f, err := nanoid.Standard(8)
+func Benchmark21NanoID(b *testing.B) {
+	f, err := nanoid.Standard(21)
 	if err != nil {
 		panic(err)
 	}
