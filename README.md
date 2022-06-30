@@ -87,9 +87,9 @@ These are all benchmarks of the `Standard` Nano ID generator
 | # of characters & # of IDs | benchmark screenshot |
 | -------------------------- | ---------- |
 | 8, ~21,800,000             | <img src="img/benchmark-8.png">   |
-| 21, ~15,100,000            | <img src="img/benchmark-21.png">  |
+| 21, ~16,400,000            | <img src="img/benchmark-21.png">  |
 | 36, ~11,500,000            | <img src="img/benchmark-36.png">  |
-| 255, ~2,300,000            | <img src="img/benchmark-255.png"> |
+| 255, ~2,500,000            | <img src="img/benchmark-255.png"> |
 
 ## Credits & references
 - [Original reference](https://github.com/ai/nanoid)

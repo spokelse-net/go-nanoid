@@ -8,18 +8,20 @@ Original reference: https://github.com/ai/nanoid
 package nanoid
 
 import (
-	cryptoRand "crypto/rand"
+	crand "crypto/rand"
+	"encoding/binary"
 	"errors"
 	"math"
 	"math/bits"
-	mathRand "math/rand"
+	mrand "math/rand"
 	"sync"
 )
 
+const alphabetSize = 64
+
 // Default characters (A-Za-z0-9_-).
 // Using less memory with [64]byte{...} than []byte(...).
-// var defaultAlphabet = []byte("useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict")
-var defaultAlphabet = [...]byte{
+var defaultAlphabet = [alphabetSize]byte{
 	'a', 'b', 'c', 'd',
 	'e', 'f', 'g', 'h',
 	'i', 'j', 'k', 'l',
@@ -58,11 +60,11 @@ func Standard(length int) (generator, error) {
 	// that the bytes only have to be refilled
 	// every 129th nanoid. This is more efficient.
 	// b holds the random crypto bytes.
-	b := make([]byte, length*128)
+	b := make([]byte, length*(length*7))
 	size := len(b)
 	offset := 0
 
-	cryptoRand.Read(b)
+	crand.Read(b)
 
 	// Since the default alphabet is ASCII,
 	// we don't have to use runes here. ASCII max is
@@ -79,7 +81,7 @@ func Standard(length int) (generator, error) {
 		// If all the bytes in the slice
 		// have been used, refill.
 		if offset == size {
-			cryptoRand.Read(b)
+			crand.Read(b)
 			offset = 0
 		}
 
@@ -126,7 +128,7 @@ func StandardNonSecure(length int) (generator, error) {
 		"Read generates len(p) random bytes from the default Source and
 		writes them into p... It always returns len(p) and a **nil error**."
 	*/
-	mathRand.Read(b)
+	mrand.Read(b)
 
 	// Reuse.
 	id := make([]byte, length)
@@ -139,15 +141,15 @@ func StandardNonSecure(length int) (generator, error) {
 
 		if offset == size {
 			// Refill b.
-			mathRand.Read(b)
+			mrand.Read(b)
 			offset = 0
 		}
 
 		for i := 0; i < length; i++ {
-			id[i] = defaultAlphabet[b[i+offset]&63]
+			id[i] = defaultAlphabet[prng(alphabetSize)]
 		}
 
-		offset += length
+		// offset += length
 
 		return string(id)
 	}, nil
@@ -187,13 +189,12 @@ func Custom(alphabet string, length int) (generator, error) {
 		defer mu.Unlock()
 
 		for u := 0; ; {
-			cryptoRand.Read(b)
+			crand.Read(b)
 
 			for i := 0; i < step; i++ {
 				idx := b[i] & byte(mask)
 
 				if idx < byte(setLen) {
-					// id.WriteRune(runicSet[idx])
 					id[u] = runicSet[idx]
 					u++
 					if u == length {
@@ -225,14 +226,9 @@ func CustomNonSecure(alphabet string, length int) (generator, error) {
 
 	id := make([]rune, length)
 
-	var mu sync.Mutex
-
 	return func() string {
-		mu.Lock()
-		defer mu.Unlock()
-
 		for i := 0; i < length; i++ {
-			id[i] = runicSet[mathRand.Intn(setLen)]
+			id[i] = runicSet[prng(setLen)]
 		}
 
 		return string(id)
@@ -243,4 +239,33 @@ var errInvalidLength = errors.New("length for ID is too large or small")
 
 func invalidLength(length int) bool {
 	return length < 2 || length > 255
+}
+
+var prngmu sync.Mutex
+var tainer uint64
+
+// This is slow but still better than math.Intn()
+func prng(n int) int {
+	prngmu.Lock()
+
+	// xorshift.
+	tainer ^= tainer << 13
+	tainer ^= tainer >> 7
+	tainer ^= tainer << 17
+
+	prngmu.Unlock()
+
+	k := int(tainer)
+
+	if k < 0 {
+		k = -k
+	}
+
+	return k % n
+}
+
+func init() {
+	b := make([]byte, 8)
+	crand.Read(b)
+	tainer = binary.BigEndian.Uint64(b)
 }
