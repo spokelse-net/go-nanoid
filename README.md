@@ -49,7 +49,7 @@ func main() {
   }
 
   id1 := createNanoid()
-  log.Printf("ID 1: %s", id1) // p7aXQf7xK3jlfecYGKeRK
+  log.Printf("ID 1: %s", id1) // Sk4rC4fjsRm-LS1gtbL1y
 
   // [!] Remember to seed. 
   rand.Seed(time.Now().Unix())
@@ -73,7 +73,7 @@ func main() {
 
 ```
 ## Notes
-**Might remove all non-secure Nano ID generators in the future. The benefit of the trade-off between using them and not the secure ones should be speed, but I can't figure out how to get them fast**
+**Might remove all non-secure Nano ID generators in the future. The benefit of the trade-off between using them and not the secure ones should be speed, but I can't figure out how to get PRNG fast**
 
 Remember to `rand.Seed(...)` before using the non-secure generators
 

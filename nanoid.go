@@ -40,18 +40,16 @@ var defaultAlphabet = [alphabetSize]byte{
 	'8', '9', '-', '_',
 }
 
-type generator = func() string
-
 /*
 Creates a new generator for canonical Nano IDs.
 
 📝 Recommended (standard) length is 21
 
-Returns error if length is not between 2 and 255 (inclusive).
+Returns error if length is not, or within 2 and 255.
 
-Concurrency safe.
+🧿 Concurrency safe.
 */
-func Standard(length int) (generator, error) {
+func Standard(length int) (func() string, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -66,7 +64,7 @@ func Standard(length int) (generator, error) {
 	crand.Read(b)
 
 	// Since the default alphabet is ASCII,
-	// we don't have to use runes here. ASCII max is
+	// we don't have to use runes. ASCII max is
 	// 128, so byte will be perfect.
 	// id := make([]rune, length)
 	id := make([]byte, length)
@@ -105,15 +103,14 @@ func Standard(length int) (generator, error) {
 
 /*
 Create a non-secure Nano ID generator.
-Non-secure is faster than secure because it uses pseudorandom numbers.
 
-Returns error if length is not between 2 and 255 (inclusive).
+Returns error if length is not, or within 2 and 255.
 
 ⚠ Remember to seed using rand.Seed().
 
-Concurrency safe.
+🧿 Concurrency safe.
 */
-func StandardNonSecure(length int) (generator, error) {
+func StandardNonSecure(length int) (func() string, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -157,9 +154,11 @@ func StandardNonSecure(length int) (generator, error) {
 /*
 Create a Nano ID generator that uses a custom alphabet.
 
-Concurrency safe.
+Returns error if length is not, or within 2 and 255.
+
+🧿 Concurrency safe.
 */
-func Custom(alphabet string, length int) (generator, error) {
+func Custom(alphabet string, length int) (func() string, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -209,13 +208,13 @@ func Custom(alphabet string, length int) (generator, error) {
 Create a non-secure Nano ID generator that uses a custom alphabet.
 Non-secure is faster than secure because it uses pseudorandom numbers.
 
-Returns error if length is not between 2 and 255 (inclusive).
+Returns error if length is not, or within 2 and 255.
 
-⚠️ Remember to seed using rand.Seed().
+⚠ Remember to seed using rand.Seed().
 
-Concurrency safe.
+🧿 Concurrency safe.
 */
-func CustomNonSecure(alphabet string, length int) (generator, error) {
+func CustomNonSecure(alphabet string, length int) (func() string, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
@@ -237,7 +236,7 @@ func CustomNonSecure(alphabet string, length int) (generator, error) {
 var prngmu sync.Mutex
 var tainer uint64
 
-// This is slow but still better than math.Intn()
+// Alternative to rand.Intn.
 func prng(n int) int {
 	prngmu.Lock()
 
