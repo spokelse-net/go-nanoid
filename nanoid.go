@@ -56,11 +56,10 @@ func Standard(length int) (generator, error) {
 		return nil, errInvalidLength
 	}
 
-	// Multiplying by 128 and using an offset so
-	// that the bytes only have to be refilled
-	// every 129th nanoid. This is more efficient.
+	// Multiplying to increase the 'buffer' so that .Read()
+	// has to be called less, which is more efficient.
 	// b holds the random crypto bytes.
-	b := make([]byte, length*(length*7))
+	b := make([]byte, length*length*6)
 	size := len(b)
 	offset := 0
 
@@ -120,7 +119,7 @@ func StandardNonSecure(length int) (generator, error) {
 	}
 
 	// b holds pseudorandom bytes.
-	b := make([]byte, length*128)
+	b := make([]byte, length*length*6)
 	size := len(b)
 	offset := 0
 
@@ -170,9 +169,9 @@ func Custom(alphabet string, length int) (generator, error) {
 	// not guaranteed to be ASCII.
 	runicSet := []rune(alphabet)
 
-	// Because the custom character-set is not guaranteed to have
+	// Because the custom alphabet is not guaranteed to have
 	// 64 chars to utilise, we have to calculate a suitable mask.
-	// The following calculations are 1:1 to the original implementation.
+	// This code below is 1:1 to the og impl.
 	clz := bits.LeadingZeros32((uint32(setLen) - 1) | 1)
 	mask := (2 << (31 - clz)) - 1
 	w := (1.6 * float64(mask*length)) / float64(setLen)
@@ -180,7 +179,7 @@ func Custom(alphabet string, length int) (generator, error) {
 
 	// Will be reusing the same rune and byte slices.
 	id := make([]rune, length)
-	b := make([]byte, step)
+	b := make([]byte, step*step*6)
 
 	var mu sync.Mutex
 
@@ -235,12 +234,6 @@ func CustomNonSecure(alphabet string, length int) (generator, error) {
 	}, nil
 }
 
-var errInvalidLength = errors.New("length for ID is too large or small")
-
-func invalidLength(length int) bool {
-	return length < 2 || length > 255
-}
-
 var prngmu sync.Mutex
 var tainer uint64
 
@@ -262,6 +255,12 @@ func prng(n int) int {
 	}
 
 	return k % n
+}
+
+var errInvalidLength = errors.New("length for ID is too large or small")
+
+func invalidLength(length int) bool {
+	return length < 2 || length > 255
 }
 
 func init() {

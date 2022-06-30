@@ -73,7 +73,7 @@ func main() {
 
 ```
 ## Notes
-**[!] The generation of non-secure Nano IDs are not as fast as they could be yet**
+**Might remove all non-secure Nano ID generators in the future. The benefit of the trade-off between using them and not the secure ones should be speed, but I can't figure out how to get them fast**
 
 Remember to `rand.Seed(...)` before using the non-secure generators
 
