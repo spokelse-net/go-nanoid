@@ -156,3 +156,14 @@ func BenchmarkNonSecureNanoID(b *testing.B) {
 		f()
 	}
 }
+
+func BenchmarkCustomNanoID(b *testing.B) {
+	f, err := nanoid.Custom("()*%!,>.;'", 16)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}

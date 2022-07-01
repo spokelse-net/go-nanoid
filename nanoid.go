@@ -163,7 +163,7 @@ func Custom(alphabet string, length int) (func() string, error) {
 		return nil, errInvalidLength
 	}
 
-	setLen := len(alphabet)
+	setLen := uint8(len(alphabet))
 	// Have to use runes because input is
 	// not guaranteed to be ASCII.
 	runicSet := []rune(alphabet)
@@ -178,24 +178,28 @@ func Custom(alphabet string, length int) (func() string, error) {
 
 	// Will be reusing the same rune and byte slices.
 	id := make([]rune, length)
-	b := make([]byte, step*step*6)
+	b := make([]byte, step)
+
+	var idx uint8
+	var u int
 
 	var mu sync.Mutex
 
+	// Likely room for improvement here.
 	return func() string {
 		mu.Lock()
 		defer mu.Unlock()
 
-		for u := 0; ; {
+		for {
 			crand.Read(b)
 
 			for i := 0; i < step; i++ {
-				idx := b[i] & byte(mask)
-
-				if idx < byte(setLen) {
+				idx = b[i] & byte(mask)
+				if idx < setLen {
 					id[u] = runicSet[idx]
 					u++
 					if u == length {
+						u = 0
 						return string(id)
 					}
 				}
