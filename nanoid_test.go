@@ -2,20 +2,12 @@
 package nanoid_test
 
 import (
-	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/jaevor/go-nanoid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func init() {
-	// This is so that math/rand can work correctly.
-	// Only needed for non-secure. Users will have to do this themselves.
-	rand.Seed(time.Now().Unix())
-}
 
 func TestStandard(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
@@ -42,16 +34,6 @@ func TestStandard(t *testing.T) {
 	})
 }
 
-func TestNonSecure(t *testing.T) {
-	t.Run("general", func(t *testing.T) {
-		f, err := nanoid.StandardNonSecure(21)
-		assert.NoError(t, err, "should be no error")
-		id := f()
-		assert.Len(t, id, 21, "should return the same length as the ID specified length")
-		t.Log(id)
-	})
-}
-
 func TestCustom(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
 		f, err := nanoid.Custom("abcdef", 21)
@@ -63,7 +45,7 @@ func TestCustom(t *testing.T) {
 }
 
 func TestFlatDistribution(t *testing.T) {
-	tries := 500_000
+	tries := 100_000
 
 	set := "0123456789" // 10.
 	length := len(set)
@@ -137,17 +119,6 @@ func Benchmark36NanoID(b *testing.B) {
 
 func Benchmark255NanoID(b *testing.B) {
 	f, err := nanoid.Standard(255)
-	if err != nil {
-		panic(err)
-	}
-
-	for n := 0; n < b.N; n++ {
-		f()
-	}
-}
-
-func BenchmarkNonSecureNanoID(b *testing.B) {
-	f, err := nanoid.StandardNonSecure(21)
 	if err != nil {
 		panic(err)
 	}

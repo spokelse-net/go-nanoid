@@ -9,7 +9,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/jaevor/go-nanoid?label=Go)](https://github.com/jaevor/go-nanoid/blob/master/go.mod)
 [![Go Ref](https://pkg.go.dev/badge/github.com/jaevor/go-nanoid)](https://pkg.go.dev/github.com/jaevor/go-nanoid)
 
-This module is a Go implementation of [nanoid](https://github.com/ai/nanoid).
+[This module](https://pkg.go.dev/github.com/jaevor/go-nanoid) is a Go implementation of [nanoid](https://github.com/ai/nanoid).
 
 Features of the nanoid spec are:
 - URL friendly
@@ -40,47 +40,29 @@ In other words, with 21 characters, the total number of possible unique IDs woul
 ```go
 import (
 	"log"
-	"math/rand"
-	"time"
 	"github.com/jaevor/go-nanoid"
 )
 
 func main() {
-  createNanoid, err := nanoid.Standard(21)
-  if err != nil {
-    panic(err)
-  }
+	canonicID, err := nanoid.Standard(21)
+	if err != nil {
+		panic(err)
+	}
 
-  id1 := createNanoid()
-  log.Printf("ID 1: %s", id1) // Sk4rC4fjsRm-LS1gtbL1y
+	id1 := canonicID()
+	log.Printf("ID 1: %s", id1) // se-jlhSbQbwlviPDFbfGe
 
-  // [!] Remember to seed. 
-  rand.Seed(time.Now().Unix())
+	customID, err := nanoid.Custom("0123456789", 12)
+	if err != nil {
+		panic(err)
+	}
 
-  createNonSecureNanoid, err := nanoid.StandardNonSecure(21)
-  if err != nil {
-    panic(err)
-  }
-
-  id2 := createNonSecureNanoid()
-  log.Printf("ID 2: %s", id2) // japKZqwnQvllgUQ8lwgkP
-
-  createCustomNanoid, err := nanoid.Custom("0123456789", 12)
-  if err != nil {
-    panic(err)
-  }
-
-  id3 := createCustomNanoid()
-  log.Printf("ID 3: %s", id3) // 462855288020
+	id2 := customID()
+	log.Printf("ID 2: %s", id2) // 466568050433
 }
-
 ```
 ## Notes
-**Might remove all non-secure Nano ID generators in the future. The benefit of the trade-off between using them and not the secure ones should be speed, but I can't figure out how to get PRNG fast**
-
-Remember to `rand.Seed(...)` before using the non-secure generators
-
-In terms of speed & efficiency, it is probably *always* better to use `Standard` Nano ID than any `Custom`
+Attempted to make non-secure generation of Nano IDs but removed it because I can't figure out a way to generate many random bytes/numbers efficiently with PRNG
 
 ## Benchmarks
 All benchmarks & tests can be found in [nanoid_test.go](./nanoid_test.go).
