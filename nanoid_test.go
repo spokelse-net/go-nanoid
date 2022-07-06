@@ -45,7 +45,7 @@ func TestCustom(t *testing.T) {
 }
 
 func TestFlatDistribution(t *testing.T) {
-	tries := 100_000
+	tries := 500_000
 
 	set := "0123456789" // 10.
 	length := len(set)
