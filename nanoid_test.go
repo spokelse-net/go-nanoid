@@ -128,9 +128,19 @@ func Benchmark255NanoID(b *testing.B) {
 	}
 }
 
-func BenchmarkCustomNanoID(b *testing.B) {
-	// f, err := nanoid.CustomUnicode("0123456789", 16)
-	f, err := nanoid.CustomASCII("0123456789", 16)
+func BenchmarkCustomUnicodeNanoID(b *testing.B) {
+	f, err := nanoid.CustomASCII("°Ô‘š±?¿⾃ⶃⵏ⟎⸸ⵌ", 8)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}
+
+func BenchmarkCustomASCIINanoID(b *testing.B) {
+	f, err := nanoid.CustomASCII("0123456789", 8)
 	if err != nil {
 		panic(err)
 	}
