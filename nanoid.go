@@ -39,7 +39,7 @@ var defaultAlphabet = [64]byte{
 }
 
 /*
-Creates a new generator for standard Nano IDs.
+Returns a new generator of standard Nano IDs.
 
 📝 Recommended (standard) length is 21
 
@@ -97,15 +97,19 @@ func Standard(length int) (generator, error) {
 }
 
 /*
-Same as nanoid.CustomUnicode.
+Will be deprecated; same as nanoid.CustomUnicode.
+
+🟡 Change to using nanoid.CustomUnicode.
 */
 func Custom(alphabet string, length int) (generator, error) {
 	return CustomUnicode(alphabet, length)
 }
 
 /*
-Returns a Nano ID generator that uses a custom alphabet that
-is allowed to contain non-ASCII (unicode). For ASCII-only use nanoid.CustomASCII.
+Returns a Nano ID generator which uses a custom alphabet that is allowed to contain non-ASCII (unicode).
+
+Uses more memory by supporting unicode.
+For ASCII-only, use nanoid.CustomASCII.
 
 ⛔ Returns error if length is not, or within 2 and 255.
 
@@ -156,8 +160,10 @@ func CustomUnicode(alphabet string, length int) (generator, error) {
 }
 
 /*
-Returns a Nano ID generator that uses a custom alphabet
-consisting of ASCII. For unicode support use nanoid.CustomUnicode.
+Returns a Nano ID generator which uses a custom alphabet that is of ASCII.
+
+Uses less memory by only supporting ASCII and not unicode.
+For unicode support use nanoid.CustomUnicode.
 
 ⛔ Returns error if length is not, or within 2 and 255.
 
