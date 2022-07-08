@@ -36,7 +36,7 @@ func TestStandard(t *testing.T) {
 
 func TestCustom(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
-		f, err := nanoid.Custom("abcdef", 21)
+		f, err := nanoid.CustomASCII("abcdef", 21)
 		id := f()
 		assert.NoError(t, err, "should be no error")
 		assert.Len(t, id, 21, "should return the same length as the ID specified length")
@@ -51,7 +51,7 @@ func TestFlatDistribution(t *testing.T) {
 	length := len(set)
 	hits := make(map[rune]int)
 
-	f, err := nanoid.Custom(set, length)
+	f, err := nanoid.CustomASCII(set, length)
 	if err != nil {
 		panic(err)
 	}
@@ -129,7 +129,8 @@ func Benchmark255NanoID(b *testing.B) {
 }
 
 func BenchmarkCustomNanoID(b *testing.B) {
-	f, err := nanoid.Custom("()*%!,>.;'", 16)
+	// f, err := nanoid.CustomUnicode("0123456789", 16)
+	f, err := nanoid.CustomASCII("0123456789", 16)
 	if err != nil {
 		panic(err)
 	}

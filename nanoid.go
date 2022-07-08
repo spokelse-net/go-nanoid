@@ -17,11 +17,9 @@ import (
 
 type generator = func() string
 
-const defaultAlphabetSize = 64
-
 // Default characters (A-Za-z0-9_-).
 // Using less memory with [64]byte{...} than []byte(...).
-var defaultAlphabet = [defaultAlphabetSize]byte{
+var defaultAlphabet = [64]byte{
 	'a', 'b', 'c', 'd',
 	'e', 'f', 'g', 'h',
 	'i', 'j', 'k', 'l',
@@ -59,9 +57,8 @@ func Standard(length int) (generator, error) {
 	// b holds the random crypto bytes.
 	size := length * length * 7
 	b := make([]byte, size)
-	offset := 0
-
 	crand.Read(b)
+	offset := 0
 
 	// Since the default alphabet is ASCII, we don't have to use runes.
 	// ASCII max is 128, so byte will be perfect.
@@ -86,7 +83,7 @@ func Standard(length int) (generator, error) {
 				The following mask reduces the random byte in the 0-255 value
 				range to the 0-63 value range. Therefore, adding hacks such
 				as empty string fallback or magic numbers is unneccessary because
-				the bitmask trims bytes down to the alphabet size (64).""
+				the bitmask trims bytes down to the alphabet size (64)."
 			*/
 			// Index using the offset.
 			id[i] = defaultAlphabet[b[i+offset]&63]
@@ -100,21 +97,27 @@ func Standard(length int) (generator, error) {
 }
 
 /*
-Create a Nano ID generator that uses a custom alphabet.
-The alphabet is allowed to contain non-ASCII.
+Same as nanoid.CustomUnicode.
+*/
+func Custom(alphabet string, length int) (generator, error) {
+	return CustomUnicode(alphabet, length)
+}
+
+/*
+Returns a Nano ID generator that uses a custom alphabet that
+is allowed to contain non-ASCII (unicode). For ASCII-only use nanoid.CustomASCII.
 
 ⛔ Returns error if length is not, or within 2 and 255.
 
 🧿 Concurrency safe.
 */
-func Custom(alphabet string, length int) (generator, error) {
+func CustomUnicode(alphabet string, length int) (generator, error) {
 	if invalidLength(length) {
 		return nil, errInvalidLength
 	}
 
 	alphabetLen := len(alphabet)
-	// Have to use runes because input is
-	// not guaranteed to be ASCII.
+	// Runes to support unicode.
 	runes := []rune(alphabet)
 
 	// Because the custom alphabet is not guaranteed to have
@@ -124,13 +127,10 @@ func Custom(alphabet string, length int) (generator, error) {
 	mask := (2 << (31 - clz)) - 1
 	step := int(math.Ceil((1.6 * float64(mask*length)) / float64(alphabetLen)))
 
-	size := step * step * 7
-	b := make([]byte, size)
-
+	b := make([]byte, step)
 	id := make([]rune, length)
 
-	var idx int
-	j := 0
+	j, idx := 0, 0
 
 	var mu sync.Mutex
 
@@ -140,11 +140,59 @@ func Custom(alphabet string, length int) (generator, error) {
 
 		for {
 			crand.Read(b)
-
 			for i := 0; i < step; i++ {
 				idx = int(b[i]) & mask
 				if idx < alphabetLen {
 					id[j] = runes[idx]
+					j++
+					if j == length {
+						j = 0
+						return string(id)
+					}
+				}
+			}
+		}
+	}, nil
+}
+
+/*
+Returns a Nano ID generator that uses a custom alphabet
+consisting of ASCII. For unicode support use nanoid.CustomUnicode.
+
+⛔ Returns error if length is not, or within 2 and 255.
+
+🧿 Concurrency safe.
+*/
+func CustomASCII(alphabet string, length int) (generator, error) {
+	if invalidLength(length) {
+		return nil, errInvalidLength
+	}
+
+	alphabetLen := len(alphabet)
+	ab := []byte(alphabet)
+
+	x := uint32(alphabetLen) - 1
+	clz := bits.LeadingZeros32(x | 1)
+	mask := (2 << (31 - clz)) - 1
+	step := int(math.Ceil((1.6 * float64(mask*length)) / float64(alphabetLen)))
+
+	b := make([]byte, step)
+	id := make([]byte, length)
+
+	j, idx := 0, 0
+
+	var mu sync.Mutex
+
+	return func() string {
+		mu.Lock()
+		defer mu.Unlock()
+
+		for {
+			crand.Read(b)
+			for i := 0; i < step; i++ {
+				idx = int(b[i]) & mask
+				if idx < alphabetLen {
+					id[j] = ab[idx]
 					j++
 					if j == length {
 						j = 0
