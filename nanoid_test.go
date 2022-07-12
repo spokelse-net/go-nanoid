@@ -37,8 +37,8 @@ func TestStandard(t *testing.T) {
 func TestCustom(t *testing.T) {
 	t.Run("general", func(t *testing.T) {
 		f, err := nanoid.CustomASCII("abcdef", 21)
-		id := f()
 		assert.NoError(t, err, "should be no error")
+		id := f()
 		assert.Len(t, id, 21, "should return the same length as the ID specified length")
 		t.Log(id)
 	})

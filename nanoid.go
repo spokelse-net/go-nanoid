@@ -19,7 +19,7 @@ type generator = func() string
 
 // `A-Za-z0-9_-`.
 // Using less memory with [64]byte{...} than []byte(...).
-var defaultAlphabet = [64]byte{
+var standardAlphabet = [64]byte{
 	'a', 'b', 'c', 'd',
 	'e', 'f', 'g', 'h',
 	'i', 'j', 'k', 'l',
@@ -39,13 +39,13 @@ var defaultAlphabet = [64]byte{
 }
 
 /*
-Returns a new generator of standard Nano IDs.
+	Returns a new generator of standard Nano IDs.
 
-📝 Recommended (standard) length is 21
+	📝 Recommended (canonic) length is 21
 
-⛔ Returns error if length is not, or within 2 and 255.
+	⛔ Returns error if length is not, or within 2 and 255.
 
-🧿 Concurrency safe.
+	🧿 Concurrency safe.
 */
 func Standard(length int) (generator, error) {
 	if invalidLength(length) {
@@ -60,7 +60,7 @@ func Standard(length int) (generator, error) {
 	crand.Read(b)
 	offset := 0
 
-	// Since the default alphabet is ASCII, we don't have to use runes.
+	// Since the standard alphabet is ASCII, we don't have to use runes.
 	// ASCII max is 128, so byte will be perfect.
 	id := make([]byte, length)
 
@@ -86,7 +86,7 @@ func Standard(length int) (generator, error) {
 				the bitmask trims bytes down to the alphabet size (64)."
 			*/
 			// Index using the offset.
-			id[i] = defaultAlphabet[b[i+offset]&63]
+			id[i] = standardAlphabet[b[i+offset]&63]
 		}
 
 		// Extend the offset.
@@ -97,23 +97,23 @@ func Standard(length int) (generator, error) {
 }
 
 /*
-Will be deprecated; same as nanoid.CustomUnicode.
+	Will be deprecated; same as nanoid.CustomUnicode.
 
-🟡 Change to using nanoid.CustomUnicode.
+	🟡 Change to using nanoid.CustomUnicode.
 */
 func Custom(alphabet string, length int) (generator, error) {
 	return CustomUnicode(alphabet, length)
 }
 
 /*
-Returns a Nano ID generator which uses a custom alphabet that is allowed to contain non-ASCII (unicode).
+	Returns a Nano ID generator which uses a custom alphabet that is allowed to contain non-ASCII (unicode).
 
-Uses more memory by supporting unicode.
-For ASCII-only, use nanoid.CustomASCII.
+	Uses more memory by supporting unicode.
+	For ASCII-only, use nanoid.CustomASCII.
 
-⛔ Returns error if length is not, or within 2 and 255.
+	⛔ Returns error if length is not, or within 2 and 255.
 
-🧿 Concurrency safe.
+	🧿 Concurrency safe.
 */
 func CustomUnicode(alphabet string, length int) (generator, error) {
 	if invalidLength(length) {
@@ -160,14 +160,14 @@ func CustomUnicode(alphabet string, length int) (generator, error) {
 }
 
 /*
-Returns a Nano ID generator which uses a custom alphabet that is of ASCII.
+	Returns a Nano ID generator which uses a custom alphabet that is of ASCII.
 
-Uses less memory by only supporting ASCII and not unicode.
-For unicode support use nanoid.CustomUnicode.
+	Uses less memory by only supporting ASCII and not unicode.
+	For unicode support use nanoid.CustomUnicode.
 
-⛔ Returns error if length is not, or within 2 and 255.
+	⛔ Returns error if length is not, or within 2 and 255.
 
-🧿 Concurrency safe.
+	🧿 Concurrency safe.
 */
 func CustomASCII(alphabet string, length int) (generator, error) {
 	if invalidLength(length) {
