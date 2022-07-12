@@ -17,7 +17,7 @@ import (
 
 type generator = func() string
 
-// Default characters (A-Za-z0-9_-).
+// `A-Za-z0-9_-`.
 // Using less memory with [64]byte{...} than []byte(...).
 var defaultAlphabet = [64]byte{
 	'a', 'b', 'c', 'd',
