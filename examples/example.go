@@ -7,20 +7,21 @@ import (
 )
 
 func main() {
-	canonic, err := nanoid.Standard(21)
+	// The canonic NanoID is nanoid.Standard(21).
+	canonicID, err := nanoid.Standard(21)
 	if err != nil {
 		panic(err)
 	}
 
-	id1 := canonic()
-	log.Printf("ID 1: %s", id1) // se-jlhSbQbwlviPDFbfGe
+	id1 := canonicID()
+	log.Printf("ID 1: %s", id1) // eLySUP3NTA48paA9mLK3V
 
-	// Makes sense to use CustomASCII since 0-9 is ascii.
-	custom, err := nanoid.CustomASCII("0123456789", 12)
+	// Makes sense to use CustomASCII since 0-9 is ASCII.
+	decenaryID, err := nanoid.CustomASCII("0123456789", 12)
 	if err != nil {
 		panic(err)
 	}
 
-	id2 := custom()
-	log.Printf("ID 2: %s", id2) // 466568050433
+	id2 := decenaryID()
+	log.Printf("ID 2: %s", id2) // 817411560404
 }

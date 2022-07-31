@@ -149,3 +149,14 @@ func BenchmarkCustomASCIINanoID(b *testing.B) {
 		f()
 	}
 }
+
+func BenchmarkASCIINanoID(b *testing.B) {
+	f, err := nanoid.ASCII(21)
+	if err != nil {
+		panic(err)
+	}
+
+	for n := 0; n < b.N; n++ {
+		f()
+	}
+}

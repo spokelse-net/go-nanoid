@@ -26,10 +26,39 @@ Features of this specific implementation are:
 - No production dependencies
 - Semver
 
-# Install
+## Install
 
 ```
 go get github.com/jaevor/go-nanoid
+```
+
+## Example
+
+```go
+import (
+	"log"
+	"github.com/jaevor/go-nanoid"
+)
+
+func main() {
+	// The canonic NanoID is nanoid.Standard(21).
+	canonicID, err := nanoid.Standard(21)
+	if err != nil {
+		panic(err)
+	}
+
+	id1 := canonicID()
+	log.Printf("ID 1: %s", id1) // eLySUP3NTA48paA9mLK3V
+
+	// Makes sense to use CustomASCII since 0-9 is ASCII.
+	decenaryID, err := nanoid.CustomASCII("0123456789", 12)
+	if err != nil {
+		panic(err)
+	}
+
+	id2 := decenaryID()
+	log.Printf("ID 2: %s", id2) // 817411560404
+}
 ```
 
 # Security
@@ -46,44 +75,11 @@ In other words, with 21 characters, the total number of possible unique IDs woul
 
 **Read more [here](https://github.com/ai/nanoid/blob/main/README.md)**
 
-## Example
-
-```go
-import (
-	"log"
-	"github.com/jaevor/go-nanoid"
-)
-
-func main() {
-	canonic, err := nanoid.Standard(21)
-	if err != nil {
-		panic(err)
-	}
-
-	id1 := canonic()
-	log.Printf("ID 1: %s", id1) // se-jlhSbQbwlviPDFbfGe
-
-	// Makes sense to use CustomASCII since 0-9 is ascii.
-	custom, err := nanoid.CustomASCII("0123456789", 12)
-	if err != nil {
-		panic(err)
-	}
-
-	id2 := custom()
-	log.Printf("ID 2: %s", id2) // 466568050433
-}
-
-```
-
-## Notes
-
-I have attempted to make non-secure generation of Nano IDs but removed it because I can't figure out a way to generate many random bytes/numbers efficiently with PRNG -- it was actually slower than using secure (`math/rand` vs `crypto/rand` -- `rand.Read(...)`).
-
 ## Benchmarks
 
-All benchmarks & tests can be found in [nanoid_test.go](./nanoid_test.go).
+All benchmarks & tests are in [nanoid_test.go](./nanoid_test.go).
 
-These are all benchmarks of the `Standard` Nano ID generator
+These are all benchmarks of `nanoid.Standard(#)`
 
 | # of characters & # of IDs | benchmark screenshot              |
 | -------------------------- | --------------------------------- |
@@ -91,6 +87,10 @@ These are all benchmarks of the `Standard` Nano ID generator
 | 21, ~16,400,000            | <img src="img/benchmark-21.png">  |
 | 36, ~11,500,000            | <img src="img/benchmark-36.png">  |
 | 255, ~2,500,000            | <img src="img/benchmark-255.png"> |
+
+## Notes
+
+I've tried to make non-secure generation of Nano IDs but removed it because I can't figure out a way to generate many random bytes efficiently with PRNGs.
 
 ## Credits & references
 
