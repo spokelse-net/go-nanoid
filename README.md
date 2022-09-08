@@ -69,7 +69,7 @@ func main() {
 
 **And also [NanoID collision calculator](https://zelark.github.io/nano-id-cc/)**:
 
-> If 1,000,000 Nano IDs (using `nanoid.Standard(21)`) were generated **each second**, it would require ~41 thousand years in order to have a 1% probability of a collision
+> If 1,000,000 Nano IDs of length 21 (a.k.a. `nanoid.Standard(21)`) were generated **each second**, it would require ~41 thousand years in order to have a 1% probability of a collision
 
 In other words, with 21 characters, the total number of possible unique IDs would be `21^64`, which is ~four septenvigintillion (`4` followed by `84` zeros) -- a figure larger than the number of atoms that exist in the universe, apparently
 
@@ -95,8 +95,8 @@ I've tried to make non-secure generation of Nano IDs but removed it because I ca
 ## Credits & references
 
 - [Original reference](https://github.com/ai/nanoid)
-- [Outdated (by 2+ years) Go implementation](https://github.com/matoous/go-nanoid)
+- [Older Go implementation of NanoID](https://github.com/matoous/go-nanoid)
 
 ## License
 
-[MIT License](./LICENSE)
+[GNU General Public License v3.0](./LICENSE)
