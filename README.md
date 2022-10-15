@@ -9,7 +9,7 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/jaevor/go-nanoid?label=Go)](https://github.com/jaevor/go-nanoid/blob/master/go.mod)
 [![Go Ref](https://pkg.go.dev/badge/github.com/jaevor/go-nanoid)](https://pkg.go.dev/github.com/jaevor/go-nanoid)
 
-[This module](https://pkg.go.dev/github.com/jaevor/go-nanoid) is a Go implementation of [nanoid](https://github.com/ai/nanoid).
+[This module](https://pkg.go.dev/github.com/jaevor/go-nanoid) is a Go implementation of [ai/nanoid](https://github.com/ai/nanoid).
 
 Features of the nanoid spec are:
 
@@ -20,7 +20,7 @@ Features of the nanoid spec are:
 
 Features of this specific implementation are:
 
-- Fastest and most performant implementation of Nano ID around ([benchmarks](#benchmarks))
+- One of the most performant implementations of Nano ID ([benchmarks](#benchmarks))
 - Prefetches random bytes in advance
 - Uses optimal memory
 - No production dependencies
