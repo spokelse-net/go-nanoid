@@ -15,7 +15,7 @@ import (
 	"unicode"
 )
 
-type generator = func() string
+type Generator = func() string
 
 // `A-Za-z0-9_-`.
 // Using less memory with [64]byte{...} than []byte(...).
@@ -65,7 +65,7 @@ var asciiAlphabet = [90]byte{
 
 	🧿 Concurrency safe.
 */
-func Standard(length int) (generator, error) {
+func Standard(length int) (Generator, error) {
 	if invalidLength(length) {
 		return nil, ErrInvalidLength
 	}
@@ -119,7 +119,7 @@ func Standard(length int) (generator, error) {
 
 	🟡 Change to using nanoid.CustomUnicode.
 */
-func Custom(alphabet string, length int) (generator, error) {
+func Custom(alphabet string, length int) (Generator, error) {
 	return CustomUnicode(alphabet, length)
 }
 
@@ -133,7 +133,7 @@ func Custom(alphabet string, length int) (generator, error) {
 
 	🧿 Concurrency safe.
 */
-func CustomUnicode(alphabet string, length int) (generator, error) {
+func CustomUnicode(alphabet string, length int) (Generator, error) {
 	if invalidLength(length) {
 		return nil, ErrInvalidLength
 	}
@@ -187,7 +187,7 @@ func CustomUnicode(alphabet string, length int) (generator, error) {
 
 	🧿 Concurrency safe.
 */
-func CustomASCII(alphabet string, length int) (generator, error) {
+func CustomASCII(alphabet string, length int) (Generator, error) {
 	if invalidLength(length) {
 		return nil, ErrInvalidLength
 	}
@@ -242,7 +242,7 @@ func CustomASCII(alphabet string, length int) (generator, error) {
 
 	🧿 Concurrency safe.
 */
-func ASCII(length int) (generator, error) {
+func ASCII(length int) (Generator, error) {
 	if invalidLength(length) {
 		return nil, ErrInvalidLength
 	}
